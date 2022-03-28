@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import styles from './phone-connect.styles';
 import validatePhone from '../onboarding/login/login.helper';
+import {Auth} from 'aws-amplify';
+
 
 
 
@@ -17,30 +19,47 @@ class PhoneConnect extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      phone: '',
+      username: '',
       canGo: false,
     };
   }
-
-  onChangePhoneNumber = phone => {
+  creerMonCompte = async () => {
+    try {
+      const {user} = await Auth.signUp({
+        username: '+33687783534',
+        password: '444444',
+      });
+      console.log('utilisateur créé:', user);
+    } catch (error) {
+      console.log('error signing up:', error);
+				Auth.forgotPassword('+33687783534')
+						.then(data => console.log(data))
+						.catch(err => console.log(err));
+				// Collect confirmation code and new password, then
+				Auth.forgotPasswordSubmit(username, code, new_password)
+						.then(data => console.log(data))
+						.catch(err => console.log(err));
+    }
+  };
+  onChangePhoneNumber = username => {
     let canGo = false;
     this.setState({
-      phone,
+      username,
     });
-    if (phone.length == 10 && phone.charAt(0) == 0) {
-      phone = phone.substring(1);
+    if (username.length == 10 && username.charAt(0) == 0) {
+      username = username.substring(1);
       this.setState({
-        phone,
+        username,
       });
-      if (validatePhone('+33' + phone)) {
+      if (validatePhone('+33' + username)) {
         canGo = true;
       }
     }
-    if (phone.length == 9) {
+    if (username.length == 9) {
       this.setState({
-        phone,
+        username,
       });
-      if (validatePhone('+33' + phone)) {
+      if (validatePhone('+33' + username)) {
         canGo = true;
       }
     }
@@ -48,11 +67,26 @@ class PhoneConnect extends React.Component {
       canGo,
     });
   };
-  canGoForward = () => {
+  canGoForward = async () => {
     if(this.state.canGo) {
-      this.props.navigation.navigate('validateConnect', {
-        phoneNumber: this.state.phone
-      });
+      console.log(this.state.username)
+      const myNum = `+33${this.state.username}`
+      try {
+        const {user} = await Auth.signUp({
+          username: `+33${this.state.username}`,
+          password: '444444',
+        });
+        this.props.navigation.navigate('validateConnect', {
+          phoneNumber: `+33${this.state.username}`
+        });
+        console.log('utilisateur créé:', user);
+      } catch (error) {
+        console.log('error signing up:', error);
+        if(error.code === 'UsernameExistsException') {
+          console.log('utilisateur existant')
+          Alert.alert('Erreur', "Un utilisateur existe déjà avec ce numéro", [{text: 'Fermer'}]);
+        }
+      }
     } else {
       Alert.alert('Erreur', "Votre numéro de téléphone n'est pas valide ou incomplet", [{text: 'Fermer'}]);
     }
@@ -80,8 +114,8 @@ class PhoneConnect extends React.Component {
             <TextInput
               style={styles.input}
               keyboardType="numeric"
-              onChangeText={phone => this.onChangePhoneNumber(phone)}
-              value={this.state.phone}
+              onChangeText={username => this.onChangePhoneNumber(username)}
+              value={this.state.username}
             />
           </View>
         </View>

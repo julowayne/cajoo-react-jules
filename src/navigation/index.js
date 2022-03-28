@@ -6,6 +6,7 @@ import Landing from '../features/onboarding/landing/landing.screen';
 import Login from '../features/onboarding/login/login.screen';
 import PhoneConnect from '../features/connect/phone-connect.screen.js';
 import ValidateConnect from '../features/validate/validate-connect.screen';
+import SignOutConnect from '../features/signout/phone-signout.screen';
 const Stack = createNativeStackNavigator();
 
 const rootContainer = () => {
@@ -29,6 +30,7 @@ const rootContainer = () => {
         <Stack.Screen options={{headerShown: true, title: 'Connexion'}} name="login" component={Login} />
         <Stack.Screen options={{headerShown: true, title: 'Connexion'}} name="PhoneConnect" component={PhoneConnect} />
         <Stack.Screen options={{headerShown: true, title: 'Connexion'}} name="validateConnect" component={ValidateConnect} />
+        <Stack.Screen options={{headerShown: true, title: 'Connecté'}} name="signOutConnect" component={SignOutConnect} />
         </Stack.Navigator>
       </NavigationContainer>
    );

@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   },
   inputs:{
     flexDirection: 'row',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   input : {
     backgroundColor: '#d3d3d3',
